@@ -5,7 +5,9 @@
 #include <sys/stat.h>
 #include "change_encoding.h"
 
-static const char* coding_type[] = {"cp1251", "koi8", "iso8859-5"};
+static const char* coding_type[]   = {"cp1251", "koi8", "iso8859-5"};
+static const int   coding_marker[] = {CP1251_SYM_CODE, KOI8_SYM_CODE,
+                                    ISO8859_5_SYM_CODE};
 
 int main(int argc, char* argv[]) {
     if (argc != 4) {
@@ -13,10 +15,12 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    int success = EXIT_FAILURE;
+    int success      = EXIT_FAILURE;
+    int coding_index = 0;
     for (size_t i = 0; i < (sizeof(coding_type) / sizeof(char*)); i++) {
         if (!strcmp(argv[2], coding_type[i])) {
-            success = EXIT_SUCCESS;
+            coding_index = i;
+            success      = EXIT_SUCCESS;
             break;
         }
     }
@@ -57,8 +61,9 @@ int main(int argc, char* argv[]) {
         if (curr_letter == EOF) {
             break;
         }
-        out_letter = cp1251_to_unicode(&curr_letter);
-        if (out_letter == NON_UNICODE_CHAR) {
+        out_letter =
+            convert_to_unicode(&curr_letter, coding_marker[coding_index]);
+        if (out_letter == NON_UNICODE_SYMBOL) {
             success = EXIT_FAILURE;
             break;
         }

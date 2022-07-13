@@ -3,4 +3,4 @@
 .settings/
 bin/
 *.o
-output_utf8.txt
+output_text.txt
